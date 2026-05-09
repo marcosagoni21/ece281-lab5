@@ -40,32 +40,39 @@ entity ALU is
 end ALU;
 
 architecture Behavioral of ALU is
-    signal w_result : signed(8 downto 0):= (others => '0');
-    signal w_sum_unsigned : unsigned(8 downto 0):= (others => '0');
 begin
     process(i_op, i_A, i_B)
+        variable v_result : signed(8 downto 0);
+        variable v_sum_unsigned : unsigned(8 downto 0);
     begin
         if i_op = "000" then 
-            w_result <= signed(i_A(7) & i_A) + signed(i_B(7) & i_B);
-            w_sum_unsigned <= unsigned('0' & i_A) + unsigned('0' & i_B);
+            v_result := signed(i_A(7) & i_A) + signed(i_B(7) & i_B);
+            v_sum_unsigned := unsigned('0' & i_A) + unsigned('0' & i_B);
         elsif i_op = "001" then 
-            w_result <= signed(i_A(7) & i_A) - signed(i_B(7) & i_B);
-            w_sum_unsigned <= unsigned('0' & i_A) - unsigned('0' & i_B);
+            v_result := signed(i_A(7) & i_A) - signed(i_B(7) & i_B);
+            v_sum_unsigned := unsigned('0' & i_A) - unsigned('0' & i_B);
         else
-            w_result <= (others => '0');
-            w_sum_unsigned <= (others => '0');
+            v_result := (others => '0');
+            v_sum_unsigned := (others => '0');
         end if;
         case i_op is
-            when "000" | "001" => o_result <= std_logic_vector(w_result(7 downto 0));
+            when "000" | "001" => o_result <= std_logic_vector(v_result(7 downto 0));
             when "010"         => o_result <= i_A and i_B;
-            when "011"         => o_result <= i_A or i_B;  
+            when "011"         => o_result <= i_A or i_B;
             when others        => o_result <= (others => '0');
         end case;
+        o_flags(3) <= v_result(7);
+        if v_result(7 downto 0) = "00000000" then
+            o_flags(2) <= '1';
+        else
+            o_flags(2) <= '0';
+        end if;
+        o_flags(1) <= v_sum_unsigned(8);
+        if (i_op = "000" and ((i_A(7) = i_B(7)) and (v_result(7) /= i_A(7)))) or 
+           (i_op = "001" and ((i_A(7) /= i_B(7)) and (v_result(7) /= i_A(7)))) then
+            o_flags(0) <= '1';
+        else
+            o_flags(0) <= '0';
+        end if;
     end process;
-    o_flags(3) <= w_result(7); 
-    o_flags(2) <= '1' when w_result(7 downto 0) = "00000000" else '0'; 
-    o_flags(1) <= w_sum_unsigned(8); 
-    o_flags(0) <= '1' when (i_op = "000" and ((i_A(7) = i_B(7)) and (w_result(7) /= i_A(7)))) or 
-                          (i_op = "001" and ((i_A(7) /= i_B(7)) and (w_result(7) /= i_A(7)))) 
-                  else '0'; 
 end Behavioral;
