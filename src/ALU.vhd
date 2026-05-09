@@ -30,6 +30,7 @@ use IEEE.NUMERIC_STD.ALL;
 -- any Xilinx leaf cells in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
+
 entity ALU is
     Port ( i_A : in STD_LOGIC_VECTOR (7 downto 0);
            i_B : in STD_LOGIC_VECTOR (7 downto 0);
@@ -43,6 +44,7 @@ begin
     process(i_op, i_A, i_B)
         variable v_result : std_logic_vector(7 downto 0);
         variable v_temp_math : signed(8 downto 0);
+        variable v_temp_unsigned : unsigned(8 downto 0);
         variable v_c : std_logic;
         variable v_v : std_logic;
     begin
@@ -52,7 +54,8 @@ begin
         if i_op = "000" then 
             v_temp_math := signed(i_A(7) & i_A) + signed(i_B(7) & i_B);
             v_result := std_logic_vector(v_temp_math(7 downto 0));
-            v_c := std_logic(unsigned('0' & i_A) + unsigned('0' & i_B))(8);
+            v_temp_unsigned := unsigned('0' & i_A) + unsigned('0' & i_B);
+            v_c := v_temp_unsigned(8);
             if (i_A(7) = i_B(7)) and (v_result(7) /= i_A(7)) then
                 v_v := '1';
             end if;
