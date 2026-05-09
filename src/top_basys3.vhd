@@ -105,7 +105,7 @@ w_display_val <= (others =>'0') when w_cycle = "0001" else
 f_regA when w_cycle = "0010" else
 f_regB when w_cycle = "0100" else
 w_result;
-u_twos_comp: entity work.twos_comp
+u_twos_comp: entity work.twoscomp_decimal
 port map(
 i_bin => w_display_val, 
 o_sign => w_sign,
