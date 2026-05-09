@@ -62,8 +62,15 @@ begin
            end case;
            end process;
            o_result <= std_logic_vector(w_result(7 downto 0));
-           o_flags(1) <= w_result(8);
            o_flags(2) <= '1' when w_result(7 downto 0) = "00000000" else '0';
            o_flags(3) <= w_result(7);
-           o_flags(0) <= '1' when (i_op = "000" and ((i_A(7) = i_B(7)) and (i_A(7) /= w_result(7)))) or (i_op = "001" and ((i_A(7) /= i_B(7)) and (i_A(7) /= w_result(7)))) else '0';
+           process(i_op, w_result)
+           begin
+           if i_op = "001" then
+           o_flags(1) <= not w_result(8);
+           else
+           o_flags(1) <= w_result(8);
+           end if;
+           end process;
+           o_flags(0) <= '1' when (i_op = "000" and ((i_A(7) = i_B(7)) and (w_result(7) /=i_A(7) ))) or (i_op = "001" and ((i_A(7) /= i_B(7)) and (w_result(7) /= i_A(7)))) else '0';
 end Behavioral;
