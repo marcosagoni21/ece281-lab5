@@ -32,7 +32,7 @@ entity top_basys3 is
         sw      :   in std_logic_vector(7 downto 0); -- operands and opcode
         btnU    :   in std_logic; -- reset
         btnC    :   in std_logic; -- fsm cycle
-        
+        btnL  : in std_logic;
         -- outputs
         led :   out std_logic_vector(15 downto 0);
         -- 7-segment display segments (active-low cathodes)
@@ -52,6 +52,7 @@ architecture top_basys3_arch of top_basys3 is
   signal f_btnc_reg : std_logic_vector(1 downto 0);
   signal w_btnC_edge : std_logic;
   signal w_sign: std_logic;
+  
   signal w_hund: std_logic_vector(3 downto 0);
   signal w_tens: std_logic_vector(3 downto 0);
   signal w_ones: std_logic_vector(3 downto 0);
@@ -117,7 +118,7 @@ u_clk_div: entity work.clock_divider
 generic map (k_DIV => 250000)
 port map(
 i_clk =>clk,
-i_reset => '0',
+i_reset => btnL,
 o_clk => w_clk_tdm
 );
 w_digit3 <= "1111" when w_sign = '1' else "0000";
