@@ -41,7 +41,7 @@ end ALU;
 
 architecture Behavioral of ALU is
 begin
-    process(i_op, i_A, i_B)
+process(i_op, i_A, i_B)
         variable v_result : signed(8 downto 0);
         variable v_sum_unsigned : unsigned(8 downto 0);
     begin
@@ -50,7 +50,11 @@ begin
             v_sum_unsigned := unsigned('0' & i_A) + unsigned('0' & i_B);
         elsif i_op = "001" then 
             v_result := signed(i_A(7) & i_A) - signed(i_B(7) & i_B);
-            v_sum_unsigned := unsigned('0' & i_A) - unsigned('0' & i_B);
+            if unsigned(i_A) >= unsigned(i_B) then
+                v_sum_unsigned := "100000000";
+            else
+                v_sum_unsigned := "000000000"; 
+            end if;
         else
             v_result := (others => '0');
             v_sum_unsigned := (others => '0');
@@ -61,16 +65,16 @@ begin
             when "011"         => o_result <= i_A or i_B;
             when others        => o_result <= (others => '0');
         end case;
-        o_flags(3) <= v_result(7);
-        if v_result(7 downto 0) = "00000000" then
+        o_flags(3) <= v_result(7); 
+        if v_result(7 downto 0) = "00000000" then 
             o_flags(2) <= '1';
         else
             o_flags(2) <= '0';
         end if;
-        o_flags(1) <= v_sum_unsigned(8);
+        o_flags(1) <= v_sum_unsigned(8); 
         if (i_op = "000" and ((i_A(7) = i_B(7)) and (v_result(7) /= i_A(7)))) or 
            (i_op = "001" and ((i_A(7) /= i_B(7)) and (v_result(7) /= i_A(7)))) then
-            o_flags(0) <= '1';
+            o_flags(0) <= '1'; 
         else
             o_flags(0) <= '0';
         end if;
