@@ -40,8 +40,8 @@ entity ALU is
 end ALU;
 
 architecture Behavioral of ALU is
-    signal w_result : signed(8 downto 0);
-    signal w_sum_unsigned : unsigned(8 downto 0);
+    signal w_result : signed(8 downto 0):= (others => '0');
+    signal w_sum_unsigned : unsigned(8 downto 0):= (others => '0');
 begin
 w_result <= signed(i_A(7) & i_A) + signed(i_B(7) & i_B) when i_op = "000" else
                 signed(i_A(7) & i_A) - signed(i_B(7) & i_B) when i_op = "001" else
